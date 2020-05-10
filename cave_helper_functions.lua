@@ -23,6 +23,17 @@ function supplyChecker(itemId, amount, func, label)
   end
 end
 
+--Check Location
+function locationChecker(posx, posy, posz, precision, func, label)
+  local pos = player:getPosition()
+  if math.abs(posx - pos.x) > precision or
+      math.abs(posx - pos.x) > precision or
+      posz ~= pos.z then
+    func(label)
+  end
+  return true
+end
+
 --Buy item from NPC
 function buyFromNPC(name, itemId, neededAmount)
   local npc = getCreatureByName(name)
