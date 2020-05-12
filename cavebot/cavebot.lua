@@ -178,15 +178,15 @@ CaveBot.save = function()
   for index, child in ipairs(ui.list:getChildren()) do
     table.insert(data, {child.action, child.value})
   end
-  local extension_data = {}
-  for extension, callbacks in pairs(CaveBot.Extensions) do
-    if callbacks.onSave then
-      local ext_data = callbacks.onSave()
-      if type(ext_data) == "table" then
-        extension_data[extension] = ext_data
-      end
-    end
-  end
-  table.insert(data, {"extensions", extension_data})
+  -- local extension_data = {}
+  -- for extension, callbacks in pairs(CaveBot.Extensions) do
+  --   if callbacks.onSave then
+  --     local ext_data = callbacks.onSave()
+  --     if type(ext_data) == "table" then
+  --       extension_data[extension] = ext_data
+  --     end
+  --   end
+  -- end
+  -- table.insert(data, {"extensions", extension_data})
   config.save(data)
 end

@@ -21,7 +21,7 @@ local holdMWMacro = macro(10, "Hold Mwall", function()
         tile:setText("")
       end
       if tile:getPosition().z == posz() then
-        if tile and tile:getText() == "MARKED" and tile:getTimer() <= 300 or (tile:getTopThing():getId() ~= 2128 and tile:getTopThing():getId() ~= 2129) then
+        if tile and tile:getText() == "MARKED" and tile:getTimer() <= 275 or (tile:getTopThing():getId() ~= 2128 and tile:getTopThing():getId() ~= 2129) then
           useWith(3180, tile:getTopUseThing())
         end
       else
