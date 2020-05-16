@@ -1,7 +1,7 @@
 -- Magic wall & Wild growth timer
 
 -- config
-local magicWallId = 2128
+local magicWallId = 2129
 local magicWallTime = 20000
 local wildGrowthId = 2130
 local wildGrowthTime = 45000

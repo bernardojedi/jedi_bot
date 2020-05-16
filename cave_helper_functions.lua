@@ -49,22 +49,25 @@ function buyFromNPC(name, itemId, neededAmount)
   local npcPos = npc:getPosition()
   if math.max(math.abs(pos.x - npcPos.x), math.abs(pos.y - npcPos.y)) > 3 then
     autoWalk(npcPos, {precision=3})
-    delay(1000)
+    CaveBot.delay(1000)
     return "retry"
   end
   if not NPC.isTrading() then
     NPC.say("hi")
     NPC.say("trade")
-    delay(500)
+    CaveBot.delay(500)
     return "retry"
   end
   
   while buyAmount > 100 do
     NPC.buy(itemId, 100)
-    delay(1000)
+    CaveBot.delay(1000)
     buyAmount = buyAmount - 100
   end
   NPC.buy(itemId, buyAmount)
+  if (neededAmount - getSupplyAmount(itemId)) > 0 then
+    return "retry"
+  end
 
   return true
 end
@@ -83,21 +86,44 @@ function sellToNPC(name, itemId)
   local npcPos = npc:getPosition()
   if math.max(math.abs(pos.x - npcPos.x), math.abs(pos.y - npcPos.y)) > 3 then
     autoWalk(npcPos, {precision=3})
-    delay(1000)
+    CaveBot.delay(1000)
     return "retry"
   end
   if not NPC.isTrading() then
     NPC.say("hi")
     NPC.say("trade")
-    delay(500)
+    CaveBot.delay(500)
     return "retry"
   end
   while currentAmount > 100 do
     NPC.sell(itemId, 100)
-    delay(1000)
+    CaveBot.delay(1000)
     currentAmount = currentAmount - 100
   end
   NPC.sell(itemId, currentAmount)
+  if getSupplyAmount(itemId) > 0 then
+    return "retry"
+  end
 
+  return true
+end
+
+--Travel to city
+function travelTo(name, city)
+  local npc = getCreatureByName(name)
+  if not npc then 
+    return false
+  end
+  local pos = player:getPosition()
+  local npcPos = npc:getPosition()
+  if math.max(math.abs(pos.x - npcPos.x), math.abs(pos.y - npcPos.y)) > 3 then
+    autoWalk(npcPos, {precision=3})
+    CaveBot.delay(1000)
+    return "retry"
+  end
+  NPC.say("hi")
+  NPC.say(city)
+  NPC.say("yes")
+  CaveBot.delay(1000)
   return true
 end

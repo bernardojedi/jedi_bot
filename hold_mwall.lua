@@ -1,7 +1,7 @@
 -- config
 local marked_tiles = {} -- Don't change anything here
 local key = "PageUp" -- Change to the hotkey you would like to mark tiles with
-local magicWallId = 2128
+local magicWallId = 2129
 local magicWallTime = 20000
 
 -- script
@@ -21,7 +21,7 @@ local holdMWMacro = macro(10, "Hold Mwall", function()
         tile:setText("")
       end
       if tile:getPosition().z == posz() then
-        if tile and tile:getText() == "MARKED" and tile:getTimer() <= 275 or (tile:getTopThing():getId() ~= 2128 and tile:getTopThing():getId() ~= 2129) then
+        if tile and tile:getText() == "MARKED" and tile:getTimer() <= 275 or (tile:getTopThing():getId() ~= 2128 and tile:getTopThing():getId() ~= 2129 and tile:getTopThing():getId() ~= 2130) then
           useWith(3180, tile:getTopUseThing())
         end
       else
