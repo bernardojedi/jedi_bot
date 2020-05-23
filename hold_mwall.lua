@@ -21,7 +21,7 @@ local holdMWMacro = macro(10, "Hold Mwall", function()
         tile:setText("")
       end
       if tile:getPosition().z == posz() then
-        if tile and tile:getText() == "MARKED" and tile:getTimer() <= 275 or (tile:getTopThing():getId() ~= 2128 and tile:getTopThing():getId() ~= 2129 and tile:getTopThing():getId() ~= 2130) then
+        if tile and tile:getText() == "MWALL" and tile:getTimer() <= 275 or (tile:getTopThing():getId() ~= 2128 and tile:getTopThing():getId() ~= 2129 and tile:getTopThing():getId() ~= 2130) then
           useWith(3180, tile:getTopUseThing())
         end
       else
@@ -61,11 +61,11 @@ onKeyUp(function(keys)
     if keys == key and not resetTiles then
       local tile = getTileUnderCursor()
       if tile then
-        if tile:getText() == "MARKED" then
+        if tile:getText() == "MWALL" then
           tile:setText("")
           table.remove(marked_tiles, tablefind(marked_tiles, tile))
         else
-          tile:setText("MARKED")
+          tile:setText("MWALL")
           table.insert(marked_tiles, tile)
         end
       end
