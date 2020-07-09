@@ -20,8 +20,11 @@ local holdMWMacro = macro(10, "Hold Mwall", function()
         table.remove(marked_tiles, tablefind(marked_tiles, tile))
         tile:setText("")
       end
+      local creatures = tile:getCreatures()
+      say(#creatures)
+      delay(2000)
       if tile:getPosition().z == posz() then
-        if tile and tile:getText() == "MWALL" and tile:getTimer() <= 275 or (tile:getTopThing():getId() ~= 2128 and tile:getTopThing():getId() ~= 2129 and tile:getTopThing():getId() ~= 2130) then
+        if tile and tile:getText() == "MWALL" and #creatures == 0 and (tile:getTimer() <= 10 or (tile:getTopThing():getId() ~= 2128 and tile:getTopThing():getId() ~= 2129 and tile:getTopThing():getId() ~= 2130)) then
           useWith(3180, tile:getTopUseThing())
         end
       else

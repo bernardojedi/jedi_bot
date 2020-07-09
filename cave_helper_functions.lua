@@ -72,6 +72,42 @@ function buyFromNPC(name, itemId, neededAmount)
   return true
 end
 
+--Buy item from NPC
+function buyFromNPCTalk(name, itemId, neededAmount, itemName)
+  local npc = getCreatureByName(name)
+  local currentAmount = getSupplyAmount(itemId)
+  if currentAmount <= 0 then
+    return true
+  end
+  if not npc then 
+    return false
+  end
+  local pos = player:getPosition()
+  local npcPos = npc:getPosition()
+  if math.max(math.abs(pos.x - npcPos.x), math.abs(pos.y - npcPos.y)) > 3 then
+    autoWalk(npcPos, {precision=3})
+    CaveBot.delay(1000)
+    return "retry"
+  end
+  say("hi")
+  CaveBot.delay(2000)
+  while currentAmount > 100 do
+    NPC.say("buy 100 "..itemName)
+    CaveBot.delay(2000)
+    NPC.say("yes")
+    CaveBot.delay(2000)
+    currentAmount = currentAmount - 100
+  end
+  say("buy "..currentAmount.." "..itemName)
+  CaveBot.delay(2000)
+  say("yes")
+  if getSupplyAmount(itemId) > 0 then
+    return "retry"
+  end
+
+  return true
+end
+
 --Sell to NPC
 function sellToNPC(name, itemId)
   local npc = getCreatureByName(name)
@@ -101,6 +137,43 @@ function sellToNPC(name, itemId)
     currentAmount = currentAmount - 100
   end
   NPC.sell(itemId, currentAmount)
+  if getSupplyAmount(itemId) > 0 then
+    return "retry"
+  end
+
+  return true
+end
+
+--Sell to NPC
+function sellToNPCTalk(name, itemId, itemName)
+  local npc = getCreatureByName(name)
+  local currentAmount = getSupplyAmount(itemId)
+  if currentAmount <= 0 then
+    return true
+  end
+  if not npc then 
+    return false
+  end
+  local pos = player:getPosition()
+  local npcPos = npc:getPosition()
+  if math.max(math.abs(pos.x - npcPos.x), math.abs(pos.y - npcPos.y)) > 3 then
+    autoWalk(npcPos, {precision=3})
+    CaveBot.delay(1000)
+    return "retry"
+  end
+  NPC.say("hi")
+  CaveBot.delay(500)
+
+  while currentAmount > 100 do
+    NPC.say("sell 100 "..itemName)
+    CaveBot.delay(500)
+    NPC.say("yes")
+    CaveBot.delay(500)
+    currentAmount = currentAmount - 100
+  end
+  NPC.say("sell "..currentAmount.." "..itemName)
+  CaveBot.delay(500)
+  NPC.say("yes")
   if getSupplyAmount(itemId) > 0 then
     return "retry"
   end

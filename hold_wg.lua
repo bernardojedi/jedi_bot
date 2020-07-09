@@ -21,7 +21,7 @@ local holdWGMacro = macro(10, "Hold WG", function()
         tile:setText("")
       end
       if tile:getPosition().z == posz() then
-        if tile and tile:getText() == "WG" and tile:getTimer() <= 275 or (tile:getTopThing():getId() ~= 2128 and tile:getTopThing():getId() ~= 2129 and tile:getTopThing():getId() ~= 2130) then
+        if tile and tile:getText() == "WG" and tile:getTimer() <= 10 or (tile:getTopThing():getId() ~= 2128 and tile:getTopThing():getId() ~= 2129 and tile:getTopThing():getId() ~= 2130) then
           useWith(3156, tile:getTopUseThing())
         end
       else
