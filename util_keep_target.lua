@@ -1,7 +1,3 @@
--- config
-local key = nil
-local parent = nil
-
 -- script
 local creatureId = 0
 
@@ -20,4 +16,10 @@ macro(100, "Keep Attack", key, function()
       delay(500)
     end
   end
-end, parent)
+end)
+
+onKeyPress(function(keys)
+  if keys == "Escape" then
+    creatureId = 0
+  end
+end)

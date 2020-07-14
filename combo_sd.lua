@@ -1,4 +1,6 @@
 
+UI.Label("Combo")
+
 local comboSDMacro = macro(50, "Combo SD", nil, function()
 
 end)

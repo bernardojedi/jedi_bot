@@ -1,8 +1,10 @@
-local itemIds = {3031, 3725, 3035, 3492}
+UI.Label("Push")
+
+local itemIds = {3031, 3492, 3725, 3035}
 local fieldIds = {2123,2121,2126}
 local stackQuantity = 6
 
-macro(100, "Anti Push", function()
+local anti_push = macro(100, "Anti Push", function()
   local containers = g_game.getContainers()
   local playerPos = player:getPosition()
   local tile = g_map.getTile(playerPos)
@@ -32,3 +34,14 @@ macro(100, "Anti Push", function()
     end
   end
 end)
+
+-- addExtraHotkey("toogleAntiPush", "Enable/disable anti-push", function(repeated)
+--   if repeated then
+--     return
+--   end
+--   if anti_push.isOn() then
+--     anti_push.enabled = true
+--   else
+--     anti_push.enabled = false
+--   end    
+-- end)

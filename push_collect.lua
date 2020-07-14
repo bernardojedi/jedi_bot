@@ -14,9 +14,11 @@ macro(10, "Collect Anti-Push", function()
             for m, itemId in ipairs(itemIds) do
               local pos = {x=playerPos.x+x, y=playerPos.y+y, z=playerPos.z}
               local tile = g_map.getTile(pos)
-              local item = tile:getTopUseThing()
-              if item:getId() == itemId then
-                g_game.move(item, container:getSlotPosition(container:getItemsCount()), item:getCount())
+              if tile then
+                local item = tile:getTopUseThing()
+                if item:getId() == itemId then
+                  g_game.move(item, container:getSlotPosition(container:getItemsCount()), item:getCount())
+                end
               end
             end
           end

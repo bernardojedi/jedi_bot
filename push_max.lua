@@ -12,3 +12,5 @@ macro(10, "Push Max", function()
     end
   end
 end)
+
+UI.Separator()

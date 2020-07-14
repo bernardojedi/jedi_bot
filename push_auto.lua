@@ -1,7 +1,7 @@
 -- config
 local pressedKey = nil
 local parent = nil
-local fieldIds = {2123,2121,2126}
+local fieldIds = {2123, 2124, 2125, 2121, 2126}
 
 -- script
 local pushCreatureId = 0
@@ -10,7 +10,7 @@ local function getDistanceBetween(p1, p2)
   return math.max(math.abs(p1.x - p2.x), math.abs(p1.y - p2.y))
 end
 
-macro(100, "Auto Push", function()
+local auto_push = macro(100, "Auto Push", function()
   local creature = g_game.getAttackingCreature()
   local hasField = false
   if creature then
@@ -60,11 +60,13 @@ macro(100, "Auto Push", function()
 
         -- Destroy field if present
         local tile = g_map.getTile(pos)
-        local topThing = tile:getTopUseThing()
-        for i, fieldId in ipairs(fieldIds) do
-          if topThing:getId() == fieldId then
-            useWith(3148, tile:getTopUseThing())
-            delay(200)
+        if tile then
+          local topThing = tile:getTopUseThing()
+          for i, fieldId in ipairs(fieldIds) do
+            if topThing:getId() == fieldId then
+              useWith(3148, topThing)
+              delay(200)
+            end
           end
         end
 
@@ -77,7 +79,9 @@ macro(100, "Auto Push", function()
 end)
 
 onKeyPress(function(keys)
-  if keys == '1' or keys == '2' or keys == '3' or keys == '4' or keys == '6' or keys == '7' or keys == '8' or keys == '9' then
-    pressedKey = keys
+  if auto_push.isOn() and modules.game_walking.wsadWalking then
+    if keys == '1' or keys == '2' or keys == '3' or keys == '4' or keys == '6' or keys == '7' or keys == '8' or keys == '9' then
+      pressedKey = keys
+    end
   end
 end)

@@ -1,8 +1,9 @@
+UI.Label("Magic Wall")
+
 -- config
 local marked_tiles = {} -- Don't change anything here
 local key = "PageUp" -- Change to the hotkey you would like to mark tiles with
 local magicWallId = 2129
-local magicWallTime = 20000
 
 -- script
 function tablefind(tab,el)
@@ -21,8 +22,6 @@ local holdMWMacro = macro(10, "Hold Mwall", function()
         tile:setText("")
       end
       local creatures = tile:getCreatures()
-      say(#creatures)
-      delay(2000)
       if tile:getPosition().z == posz() then
         if tile and tile:getText() == "MWALL" and #creatures == 0 and (tile:getTimer() <= 10 or (tile:getTopThing():getId() ~= 2128 and tile:getTopThing():getId() ~= 2129 and tile:getTopThing():getId() ~= 2130)) then
           useWith(3180, tile:getTopUseThing())

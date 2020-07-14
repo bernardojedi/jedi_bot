@@ -20,8 +20,9 @@ local holdWGMacro = macro(10, "Hold WG", function()
         table.remove(marked_wg_tiles, tablefind(marked_wg_tiles, tile))
         tile:setText("")
       end
+      local creatures = tile:getCreatures()
       if tile:getPosition().z == posz() then
-        if tile and tile:getText() == "WG" and tile:getTimer() <= 10 or (tile:getTopThing():getId() ~= 2128 and tile:getTopThing():getId() ~= 2129 and tile:getTopThing():getId() ~= 2130) then
+        if tile and tile:getText() == "WG" and #creatures == 0 and (tile:getTimer() <= 10 or (tile:getTopThing():getId() ~= 2128 and tile:getTopThing():getId() ~= 2129 and tile:getTopThing():getId() ~= 2130)) then
           useWith(3156, tile:getTopUseThing())
         end
       else

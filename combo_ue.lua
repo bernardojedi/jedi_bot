@@ -26,3 +26,5 @@ UI.Label("Combo Cmd:")
 UI.TextEdit(storage.comboUECmd or "Bye", function(widget, newText)
   storage.comboUECmd = newText
 end)
+
+UI.Separator()
