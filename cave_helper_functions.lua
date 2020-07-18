@@ -122,18 +122,19 @@ function sellToNPC(name, itemId)
   local npcPos = npc:getPosition()
   if math.max(math.abs(pos.x - npcPos.x), math.abs(pos.y - npcPos.y)) > 3 then
     autoWalk(npcPos, {precision=3})
-    CaveBot.delay(1000)
+    delay(1000)
     return "retry"
   end
   if not NPC.isTrading() then
     NPC.say("hi")
+    delay(1000)
     NPC.say("trade")
-    CaveBot.delay(500)
+    delay(1000)
     return "retry"
   end
   while currentAmount > 100 do
     NPC.sell(itemId, 100)
-    CaveBot.delay(1000)
+    delay(1000)
     currentAmount = currentAmount - 100
   end
   NPC.sell(itemId, currentAmount)
