@@ -10,7 +10,7 @@ local healthp_for_energy = 50;
 local healthp_for_original = 90;
 local manap_for_original = 10;
 
-macro(100, "Auto E-ring", function()
+macro(20, "Auto E-ring", function()
     
     local manaPercent = math.floor(100 * (player:getMana() / player:getMaxMana()))
     if (manaPercent <= manap_for_original or player:getHealthPercent() >= healthp_for_original) and getFinger() and getFinger():getId() == energy_ring_equiped then
@@ -20,13 +20,13 @@ macro(100, "Auto E-ring", function()
         else
             g_game.move(getFinger(), {x=65535, y=3, z=0}, 1)
         end
-        delay(100)
+        delay(200)
     elseif (player:getHealthPercent() <= healthp_for_energy and manaPercent >= manap_for_original and (not getFinger() or getFinger():getId() ~= energy_ring_equiped)) then
         local ring = findItem(energy_ring);
         if (ring) then
             original_ring = getFinger();
             g_game.move(ring, {x=65535, y=9, z=0}, 1)
-            delay(100)
+            delay(200)
         end
     end
 end)
