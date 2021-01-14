@@ -63,3 +63,28 @@ delay(100 + retries * 100)
 return "retry"
 ]])
 
+addExampleFunction("Disable TargetBot", [[
+TargetBot.setOff()
+return true
+]])
+
+addExampleFunction("Enable TargetBot", [[
+TargetBot.setOn()
+return true
+]])
+
+addExampleFunction("Enable TargetBot luring", [[
+TargetBot.enableLuring()
+return true
+]])
+
+addExampleFunction("Disable TargetBot luring", [[
+TargetBot.disableLuring()
+return true
+]])
+
+addExampleFunction("Logout", [[
+g_game.safeLogout()
+delay(1000)
+return "retry"
+]])

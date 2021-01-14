@@ -10,7 +10,7 @@ local function getDistanceBetween(p1, p2)
   return math.max(math.abs(p1.x - p2.x), math.abs(p1.y - p2.y))
 end
 
-local auto_push = macro(100, "Auto Push", function()
+local auto_push = macro(100, "Auto Push - Distance", function()
   local creature = g_game.getAttackingCreature()
   local hasField = false
   if creature then

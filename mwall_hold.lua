@@ -23,12 +23,21 @@ local holdMWMacro = macro(10, "Hold Mwall", function()
       end
       local creatures = tile:getCreatures()
       if tile:getPosition().z == posz() then
-        if tile and tile:getText() == "MWALL" and #creatures == 0 and (tile:getTimer() <= 10 or (tile:getTopThing():getId() ~= 2128 and tile:getTopThing():getId() ~= 2129 and tile:getTopThing():getId() ~= 2130)) then
+        if tile and tile:getText() == "MWALL" and #creatures == 0 and (tile:isWalkable() or tile:getTimer()<=180) then
           useWith(3180, tile:getTopUseThing())
         end
       else
         table.remove(marked_tiles, tablefind(marked_tiles, tile))
       end
+    end
+  end
+end)
+
+onCreaturePositionChange(function(creature, newPos, oldPos)
+  if holdMWMacro.isOn() and oldPos then
+    local tile = g_map.getTile(oldPos)
+    if tile and tile:getText() == "MWALL" and oldPos and oldPos.z == posz() then
+      useWith(3180, tile:getTopUseThing())
     end
   end
 end)
@@ -74,3 +83,15 @@ onKeyUp(function(keys)
     end
   end
 end)
+
+-- onCreaturePositionChange(function(creature, newPos, oldPos)
+--   if table.getn(marked_tiles) ~= 0 then
+--     for i, tile in pairs(marked_tiles) do
+--       if tile:getPosition() == oldPos then
+--         if tile and tile:getText() == "MWALL" then
+--           useWith(3180, tile:getTopUseThing())
+--         end
+--       end
+--     end
+--   end
+-- end)

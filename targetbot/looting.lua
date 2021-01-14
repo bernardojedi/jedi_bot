@@ -145,14 +145,14 @@ TargetBot.Looting.process = function(targets, dangerLevel)
   end
 
   local container = tile:getTopUseThing()
-  if not container or container:getId() ~= loot.container then
+  if not container or not container:isContainer() then
     table.remove(TargetBot.Looting.list, 1)
     return true
   end
 
   g_game.open(container)
   waitTill = now + 1000 -- give it 1s to open
-  waitingForContainer = loot.container
+  waitingForContainer = container:getId()
   loot.tries = loot.tries + 10
 
   return true
@@ -213,9 +213,9 @@ TargetBot.Looting.lootContainer = function(lootContainers, container)
   -- loot items
   local nextContainer = nil
   for i, item in ipairs(container:getItems()) do
-    if item:isContainer() then
+    if item:isContainer() and not itemsById[item:getId()] then
       nextContainer = item
-    elseif itemsById[item:getId()] or ui.everyItem:isOn() then
+    elseif itemsById[item:getId()] or (ui.everyItem:isOn() and not item:isContainer()) then
       item.lootTries = (item.lootTries or 0) + 1
       if item.lootTries < 5 then -- if can't be looted within 0.5s then skip it
         return TargetBot.Looting.lootItem(lootContainers, item)
@@ -277,6 +277,10 @@ end)
 onCreatureDisappear(function(creature)
   if not TargetBot.isOn() then return end
   if not creature:isMonster() then return end
+  local config = TargetBot.Creature.calculateParams(creature, {}) -- return {craeture, config, danger, priority}
+  if not config.config or config.config.dontLoot then
+    return
+  end
   local pos = player:getPosition()
   local mpos = creature:getPosition()
   local name = creature:getName()

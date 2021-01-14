@@ -107,16 +107,23 @@ CaveBot.registerAction("function", "red", function(value, retries, prev)
 end)
 
 CaveBot.registerAction("goto", "green", function(value, retries, prev)
-  local pos = regexMatch(value, "\\s*([0-9]+)\\s*,\\s*([0-9]+)\\s*,\\s*([0-9]+)")
+  local pos = regexMatch(value, "\\s*([0-9]+)\\s*,\\s*([0-9]+)\\s*,\\s*([0-9]+),?\\s*([0-9]?)")
   if not pos[1] then
     error("Invalid cavebot goto action value. It should be position (x,y,z), is: " .. value)
     return false
   end
   
-  if retries >= 5 then
-    return false -- tried 5 times, can't get there
+  if CaveBot.Config.get("mapClick") then
+    if retries >= 5 then
+      return false -- tried 5 times, can't get there
+    end
+  else
+    if retries >= 100 then
+      return false -- tried 100 times, can't get there
+    end  
   end
 
+  local precision = tonumber(pos[1][5])
   pos = {x=tonumber(pos[1][2]), y=tonumber(pos[1][3]), z=tonumber(pos[1][4])}  
   local playerPos = player:getPosition()
   if pos.z ~= playerPos.z then 
@@ -134,7 +141,7 @@ CaveBot.registerAction("goto", "green", function(value, retries, prev)
     if math.abs(pos.x-playerPos.x) == 0 and math.abs(pos.y-playerPos.y) <= 0 then
       return true -- already at position
     end
-  elseif math.abs(pos.x-playerPos.x) == 0 and math.abs(pos.y-playerPos.y) <= 1 then
+  elseif math.abs(pos.x-playerPos.x) == 0 and math.abs(pos.y-playerPos.y) <= (precision or 1) then
       return true -- already at position
   end
   -- check if there's a path to that place, ignore creatures and fields
@@ -142,17 +149,14 @@ CaveBot.registerAction("goto", "green", function(value, retries, prev)
   if not path then
     return false -- there's no way
   end
-  
-  -- walk will be executed, but it will take some time to get response from server, wait 300ms after autowalk
-  CaveBot.delay(300)
-  
+    
   -- try to find path, don't ignore creatures, don't ignore fields
-  if autoWalk(pos, 40) then
+  if not CaveBot.Config.get("ignoreFields") and CaveBot.walkTo(pos, 40) then
     return "retry"
   end
   
   -- try to find path, don't ignore creatures, ignore fields
-  if autoWalk(pos, 40, { ignoreNonPathable = true }) then
+  if CaveBot.walkTo(pos, 40, { ignoreNonPathable = true }) then
     return "retry"
   end
   
@@ -162,12 +166,21 @@ CaveBot.registerAction("goto", "green", function(value, retries, prev)
     if stairs then
       precison = 0
     end
-    if autoWalk(pos, 50, { ignoreNonPathable = true, precision = precison }) then
+    if CaveBot.walkTo(pos, 50, { ignoreNonPathable = true, precision = precison }) then
       return "retry"
     end    
   end
   
-  autoWalk(path) -- everything else failed, try to walk ignoring creatures, maybe will work
+  if not CaveBot.Config.get("mapClick") and retries >= 5 then
+    return false
+  end
+  
+  if CaveBot.Config.get("skipBlocked") then
+    return false
+  end
+
+  -- everything else failed, try to walk ignoring creatures, maybe will work
+  CaveBot.walkTo(pos, 40, { ignoreNonPathable = true, precision = 1, ignoreCreatures = true })
   return "retry"
 end)
 
@@ -204,7 +217,7 @@ CaveBot.registerAction("use", "#FFB272", function(value, retries, prev)
   end
 
   use(topThing)
-  CaveBot.delay(400)
+  CaveBot.delay(CaveBot.Config.get("useDelay") + CaveBot.Config.get("ping"))
   return true
 end)
 
@@ -241,7 +254,7 @@ CaveBot.registerAction("usewith", "#EEB292", function(value, retries, prev)
   end
 
   usewith(itemid, topThing)
-  CaveBot.delay(400)
+  CaveBot.delay(CaveBot.Config.get("useDelay") + CaveBot.Config.get("ping"))
   return true
 end)
 

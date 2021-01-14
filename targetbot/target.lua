@@ -2,6 +2,7 @@ local targetbotMacro = nil
 local config = nil
 local lastAction = 0
 local cavebotAllowance = 0
+local lureEnabled = true
 
 -- ui
 local configWidget = UI.Config()
@@ -77,6 +78,9 @@ targetbotMacro = macro(100, function()
       TargetBot.setStatus("Luring using CaveBot")
     else
       TargetBot.setStatus("Attacking")
+      if not lureEnabled then
+        TargetBot.setStatus("Attacking (luring off)")      
+      end
     end
     TargetBot.walk()
     lastAction = now
@@ -117,6 +121,7 @@ config = Config.setup("targetbot_configs", configWidget, "json", function(name, 
 
   targetbotMacro.setOn(enabled)
   targetbotMacro.delay = nil
+  lureEnabled = true
 end)
 
 -- setup ui
@@ -198,6 +203,15 @@ TargetBot.allowCaveBot = function(time)
   cavebotAllowance = now + time
 end
 
+TargetBot.disableLuring = function()
+  lureEnabled = false
+end
+
+TargetBot.enableLuring = function()
+  lureEnabled = true
+end
+
+
 -- attacks
 local lastSpell = 0
 local lastAttackSpell = 0
@@ -264,4 +278,8 @@ TargetBot.useAttackItem = function(item, subType, target, delay)
     end
     lastRuneAttack = now
   end
+end
+
+TargetBot.canLure = function()
+  return lureEnabled
 end

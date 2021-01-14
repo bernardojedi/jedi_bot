@@ -1,7 +1,7 @@
 -- script
 local creatureId = 0
 
-macro(100, "Keep Attack", key, function()
+macro(100, "Keep Attack", function()
   if g_game.getFollowingCreature() then
     creatureId = 0
     return

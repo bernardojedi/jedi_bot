@@ -1,7 +1,8 @@
 -- Magic wall & Wild growth timer
 
 -- config
-local magicWallId = 2128
+local magicWallId1 = 2128
+local magicWallId2 = 2129
 local magicWallTime = 20000
 local wildGrowthId = 2130
 local wildGrowthTime = 45000
@@ -14,8 +15,10 @@ onAddThing(function(tile, thing)
     return
   end
   local timer = 0
-  if thing:getId() == magicWallId then
+  if thing:getId() == magicWallId1 then
     timer = magicWallTime
+  elseif thing:getId() == magicWallId2 then
+      timer = magicWallTime
   elseif thing:getId() == wildGrowthId then
     timer = wildGrowthTime
   else
@@ -33,7 +36,7 @@ onRemoveThing(function(tile, thing)
   if not thing:isItem() then
     return
   end
-  if (thing:getId() == magicWallId or thing:getId() == wildGrowthId) and tile:getGround() then
+  if (thing:getId() == magicWallId1 or thing:getId() == magicWallId2 or thing:getId() == wildGrowthId) and tile:getGround() then
     local pos = tile:getPosition().x .. "," .. tile:getPosition().y .. "," .. tile:getPosition().z
     activeTimers[pos] = nil
     tile:setTimer(0)

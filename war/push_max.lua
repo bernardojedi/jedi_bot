@@ -1,4 +1,4 @@
-macro(10, "Push Max", function()
+macro(100, "Drag Anti Push", function()
   local playerPos = player:getPosition()
   for x=-1,1 do
     for y=-1,1 do

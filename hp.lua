@@ -13,15 +13,18 @@ if type(storage.healing1) ~= "table" then
   storage.healing1 = {on=false, title="HP%", text="exura", min=51, max=90}
 end
 if type(storage.healing2) ~= "table" then
-  storage.healing2 = {on=false, title="HP%", text="exura vita", min=0, max=50}
+  storage.healing2 = {on=false, title="HP%", text="exura gran", min=0, max=50}
+end
+if type(storage.healing3) ~= "table" then
+  storage.healing3 = {on=false, title="HP%", text="exura vita", min=0, max=50}
 end
 
 -- create 2 healing widgets
-for _, healingInfo in ipairs({storage.healing1, storage.healing2}) do
+for _, healingInfo in ipairs({storage.healing1, storage.healing2, storage.healing3}) do
   local healingmacro = macro(20, function()
     local hp = player:getHealthPercent()
     if healingInfo.max >= hp and hp >= healingInfo.min then
-      if TargetBot then 
+      if TargetBot then
         TargetBot.saySpell(healingInfo.text) -- sync spell with targetbot if available
       else
         say(healingInfo.text)

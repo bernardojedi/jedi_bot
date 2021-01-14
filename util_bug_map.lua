@@ -30,6 +30,7 @@ onKeyPress(function(keys)
         local path = findPath(playerPos, walkPos, d+5, {})
         if path then
           walk(path[1])
+          delay(200)
           return
         end
       end

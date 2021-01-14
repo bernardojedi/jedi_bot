@@ -67,8 +67,18 @@ TargetBot.Creature.walk = function(creature, config, targets)
   local cpos = creature:getPosition()
   local pos = player:getPosition()
   
+  local isTrapped = true
+  local pos = player:getPosition()
+  local dirs = {{-1,1}, {0,1}, {1,1}, {-1, 0}, {1, 0}, {-1, -1}, {0, -1}, {1, -1}}
+  for i=1,#dirs do
+    local tile = g_map.getTile({x=pos.x-dirs[i][1],y=pos.y-dirs[i][2],z=pos.z})
+    if tile and tile:isWalkable(false) then
+      isTrapped = false
+    end
+  end
+  
   -- luring
-  if (config.lure or config.lureCavebot) and not (config.chase and creature:getHealthPercent() < 30) then
+  if TargetBot.canLure() and (config.lure or config.lureCavebot) and not (config.chase and creature:getHealthPercent() < 30) and not isTrapped then
     local monsters = 0
     if targets < config.lureCount then
       if config.lureCavebot then

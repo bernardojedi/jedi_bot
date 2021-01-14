@@ -64,14 +64,24 @@ TargetBotCreatureEditorCheckBox < BotSwitch
 TargetBotCreatureEditorWindow < MainWindow
   text: TargetBot creature editor
   width: 500
-  height: 600
+  height: 630
+  
+  $mobile:
+    height: 300
 
   Label
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.top: parent.top
     text-align: center
-    text: You can use * (any characters) and ? (any character) in target name
+    !text: tr('You can use * (any characters) and ? (any character) in target name')
+
+  Label
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    text-align: center
+    !text: tr('You can also enter multiple targets, separate them by ,')
   
   TextEdit
     id: name
@@ -86,29 +96,49 @@ TargetBotCreatureEditorWindow < MainWindow
     anchors.left: parent.left
     text: Target name:
 
-  Panel
-    id: left
+  VerticalScrollBar
+    id: contentScroll
+    anchors.top: name.bottom
+    anchors.right: parent.right
+    anchors.bottom: help.top
+    step: 28
+    pixels-scroll: true
+    margin-right: -10
+    margin-top: 5
+    margin-bottom: 5
+
+  ScrollablePanel
+    id: content
     anchors.top: name.bottom
     anchors.left: parent.left
-    anchors.right: parent.horizontalCenter
-    margin-top: 5
-    margin-left: 10
-    margin-right: 10
-    layout:
-      type: verticalBox
-      fit-children: true
-
-  Panel
-    id: right
-    anchors.top: name.bottom
-    anchors.left: parent.horizontalCenter
     anchors.right: parent.right
-    margin-top: 5
-    margin-left: 10
-    margin-right: 10
-    layout:
-      type: verticalBox
-      fit-children: true
+    anchors.bottom: help.top
+    vertical-scrollbar: contentScroll
+    margin-bottom: 10
+      
+    Panel
+      id: left
+      anchors.top: parent.top
+      anchors.left: parent.left
+      anchors.right: parent.horizontalCenter
+      margin-top: 5
+      margin-left: 10
+      margin-right: 10
+      layout:
+        type: verticalBox
+        fit-children: true
+
+    Panel
+      id: right
+      anchors.top: parent.top
+      anchors.left: parent.horizontalCenter
+      anchors.right: parent.right
+      margin-top: 5
+      margin-left: 10
+      margin-right: 10
+      layout:
+        type: verticalBox
+        fit-children: true
   
   Button
     id: help

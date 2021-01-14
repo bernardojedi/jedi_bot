@@ -11,6 +11,9 @@ CaveBot.actionList = ui.list
 if CaveBot.Editor then
   CaveBot.Editor.setup()
 end
+if CaveBot.Config then
+  CaveBot.Config.setup()
+end
 for extension, callbacks in pairs(CaveBot.Extensions) do
   if callbacks.setup then
     callbacks.setup()
@@ -22,9 +25,14 @@ local actionRetries = 0
 local prevActionResult = true
 cavebotMacro = macro(20, function()
   if TargetBot and TargetBot.isActive() and not TargetBot.isCaveBotActionAllowed() then
+    CaveBot.resetWalking()
     return -- target bot or looting is working, wait
   end
-
+  
+  if CaveBot.doWalking() then
+    return -- executing walking
+  end
+  
   local actions = ui.list:getChildCount()
   if actions == 0 then return end
   local currentAction = ui.list:getFocusedChild()
@@ -36,6 +44,7 @@ cavebotMacro = macro(20, function()
   local retry = false
   if action then
     local status, result = pcall(function()
+      CaveBot.resetWalking()
       return action.callback(value, actionRetries, prevActionResult)
     end)
     if status then
@@ -72,11 +81,6 @@ cavebotMacro = macro(20, function()
   ui.list:focusChild(ui.list:getChildByIndex(nextAction))
 end)
 
-onPlayerPositionChange(function()
-  local delayAfterPositionChange = math.max(player:getStepDuration() + 100, 200)
-  cavebotMacro.delay = math.max(cavebotMacro.delay or 0, now + delayAfterPositionChange)
-end)
-
 -- config, its callback is called immediately, data can be nil
 local lastConfig = ""
 config = Config.setup("cavebot_configs", configWidget, "cfg", function(name, enabled, data)
@@ -90,9 +94,19 @@ config = Config.setup("cavebot_configs", configWidget, "cfg", function(name, ena
   ui.list:destroyChildren()
   if not data then return cavebotMacro.setOff() end
   
+  local cavebotConfig = nil
   for k,v in ipairs(data) do
     if type(v) == "table" and #v == 2 then
-      if v[1] == "extensions" then
+      if v[1] == "config" then
+        local status, result = pcall(function()
+          return json.decode(v[2])
+        end)
+        if not status then
+          error("Error while parsing CaveBot extensions from config:\n" .. result)
+        else
+          cavebotConfig = result
+        end
+      elseif v[1] == "extensions" then
         local status, result = pcall(function()
           return json.decode(v[2])
         end)
@@ -110,8 +124,11 @@ config = Config.setup("cavebot_configs", configWidget, "cfg", function(name, ena
       end
     end
   end
+
+  CaveBot.Config.onConfigChange(name, enabled, cavebotConfig)
   
   actionRetries = 0
+  CaveBot.resetWalking()
   prevActionResult = true
   cavebotMacro.setOn(enabled)
   cavebotMacro.delay = nil
@@ -134,6 +151,16 @@ ui.showEditor.onClick = function()
   end
 end
 
+ui.showConfig.onClick = function()
+  if not CaveBot.Config then return end
+  if ui.showConfig:isOn() then
+    CaveBot.Config.hide()
+    ui.showConfig:setOn(false)
+  else
+    CaveBot.Config.show()
+    ui.showConfig:setOn(true)
+  end
+end
 
 -- public function, you can use them in your scripts
 CaveBot.isOn = function()
@@ -159,7 +186,7 @@ CaveBot.setOff = function(val)
 end
 
 CaveBot.delay = function(value)
-  cavebotMacro.delay = now + value
+  cavebotMacro.delay = math.max(cavebotMacro.delay or 0, now + value)
 end
 
 CaveBot.gotoLabel = function(label)
@@ -178,15 +205,20 @@ CaveBot.save = function()
   for index, child in ipairs(ui.list:getChildren()) do
     table.insert(data, {child.action, child.value})
   end
-  -- local extension_data = {}
-  -- for extension, callbacks in pairs(CaveBot.Extensions) do
-  --   if callbacks.onSave then
-  --     local ext_data = callbacks.onSave()
-  --     if type(ext_data) == "table" then
-  --       extension_data[extension] = ext_data
-  --     end
-  --   end
-  -- end
-  -- table.insert(data, {"extensions", extension_data})
+  
+  if CaveBot.Config then
+    table.insert(data, {"config", json.encode(CaveBot.Config.save())})
+  end
+  
+  local extension_data = {}
+  for extension, callbacks in pairs(CaveBot.Extensions) do
+    if callbacks.onSave then
+      local ext_data = callbacks.onSave()
+      if type(ext_data) == "table" then
+        extension_data[extension] = ext_data
+      end
+    end
+  end
+  table.insert(data, {"extensions", json.encode(extension_data, 2)})
   config.save(data)
 end

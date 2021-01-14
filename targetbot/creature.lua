@@ -20,7 +20,13 @@ TargetBot.Creature.addConfig = function(config, focus)
   TargetBot.Creature.resetConfigsCache()
 
   if not config.regex then
-    config.regex = "^" .. config.name:trim():lower():gsub("%*", ".*"):gsub("%?", ".?") .. "$"
+    config.regex = ""
+    for part in string.gmatch(config.name, "[^,]+") do
+      if config.regex:len() > 0 then
+        config.regex = config.regex .. "|"
+      end
+      config.regex = config.regex .. "^" .. part:trim():lower():gsub("%*", ".*"):gsub("%?", ".?") .. "$"    
+    end
   end
 
   local widget = UI.createWidget("TargetBotEntry", TargetBot.targetList)

@@ -8,7 +8,7 @@ TargetBot.Creature.edit = function(config, callback) -- callback = function(newC
   table.insert(values, {"name", function() return editor.name:getText() end})
 
   local addScrollBar = function(id, title, min, max, defaultValue)
-    local widget = UI.createWidget('TargetBotCreatureEditorScrollBar', editor.left)
+    local widget = UI.createWidget('TargetBotCreatureEditorScrollBar', editor.content.left)
     widget.scroll.onValueChange = function(scroll, value)
       widget.text:setText(title .. ": " .. value)
     end
@@ -24,14 +24,14 @@ TargetBot.Creature.edit = function(config, callback) -- callback = function(newC
   end
 
   local addTextEdit = function(id, title, defaultValue)
-    local widget = UI.createWidget('TargetBotCreatureEditorTextEdit', editor.right)
+    local widget = UI.createWidget('TargetBotCreatureEditorTextEdit', editor.content.right)
     widget.text:setText(title)
     widget.textEdit:setText(config[id] or defaultValue or "")
     table.insert(values, {id, function() return widget.textEdit:getText() end})
   end
 
   local addCheckBox = function(id, title, defaultValue)
-    local widget = UI.createWidget('TargetBotCreatureEditorCheckBox', editor.right)
+    local widget = UI.createWidget('TargetBotCreatureEditorCheckBox', editor.content.right)
     widget.onClick = function()
       widget:setOn(not widget:isOn())
     end
@@ -45,7 +45,7 @@ TargetBot.Creature.edit = function(config, callback) -- callback = function(newC
   end
 
   local addItem = function(id, title, defaultItem)
-    local widget = UI.createWidget('TargetBotCreatureEditorItem', editor.right)
+    local widget = UI.createWidget('TargetBotCreatureEditorItem', editor.content.right)
     widget.text:setText(title)
     widget.item:setItemId(config[id] or defaultItem)
     table.insert(values, {id, function() return widget.item:getItemId() end})
@@ -62,7 +62,14 @@ TargetBot.Creature.edit = function(config, callback) -- callback = function(newC
       newConfig[value[1]] = value[2]()
     end
     if newConfig.name:len() < 1 then return end
-    newConfig.regex = "^" .. newConfig.name:trim():lower():gsub("%*", ".*"):gsub("%?", ".?") .. "$"
+
+    newConfig.regex = ""
+    for part in string.gmatch(newConfig.name, "[^,]+") do
+      if newConfig.regex:len() > 0 then
+        newConfig.regex = newConfig.regex .. "|"
+      end
+      newConfig.regex = newConfig.regex .. "^" .. part:trim():lower():gsub("%*", ".*"):gsub("%?", ".?") .. "$"    
+    end
 
     editor:destroy()
     callback(newConfig)
@@ -88,6 +95,7 @@ TargetBot.Creature.edit = function(config, callback) -- callback = function(newC
 
   addCheckBox("chase", "Chase", true)
   addCheckBox("keepDistance", "Keep Distance", false)
+  addCheckBox("dontLoot", "Don't loot", false)
   addCheckBox("lure", "Lure", false)
   addCheckBox("lureCavebot", "Lure using cavebot", false)
   addCheckBox("avoidAttacks", "Avoid wave attacks", false)
