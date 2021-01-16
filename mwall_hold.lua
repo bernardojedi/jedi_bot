@@ -2,7 +2,7 @@ UI.Label("Magic Wall")
 
 -- config
 local marked_tiles = {} -- Don't change anything here
-local key = "PageUp" -- Change to the hotkey you would like to mark tiles with
+local key = "Pause"
 local magicWallId = 2129
 
 -- script

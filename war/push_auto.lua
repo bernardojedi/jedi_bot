@@ -11,10 +11,14 @@ local function getDistanceBetween(p1, p2)
 end
 
 local auto_push = macro(100, "Auto Push - Distance", function()
-  local creature = g_game.getAttackingCreature()
+  local attackingCreature = g_game.getAttackingCreature()
+  local followingCreature = g_game.getFollowingCreature()
   local hasField = false
-  if creature then
-    pushCreatureId = creature:getId()
+  if attackingCreature then
+    pushCreatureId = attackingCreature:getId()
+  end
+  if followingCreature then
+    pushCreatureId = followingCreature:getId()
   end
   if pushCreatureId > 0 then
     if pressedKey == '1' or pressedKey == '2' or pressedKey == '3' or pressedKey == '4' or pressedKey == '6' or pressedKey == '7' or pressedKey == '8' or pressedKey == '9' then

@@ -94,10 +94,16 @@ local targetOldPos
 macro(10, function()
   if not storage[pushPanelName].enabled then return end
   local atkCreature = g_game.getAttackingCreature()
+  local flwCreature = g_game.getFollowingCreature()
+  if targetTile and targetTile:getTimer() <= 0 and targetTile:getText() == "TARGET IN: " then
+    targetTile:setText("")
+    targetTile = nil
+  end
   if atkCreature then
-      target = atkCreature
-  else
-      target = g_game.getFollowingCreature()
+    target = atkCreature
+  end
+  if flwCreature then
+    target = flwCreature
   end
   if target and targetTile then
     local field = false
