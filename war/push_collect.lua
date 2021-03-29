@@ -1,4 +1,4 @@
-local itemIds = {3507, 3031, 3492, 3035, 3029, 3725}
+local itemIds = {3507, 3031, 3492, 3035, 3029, 3725, 3043}
 
 macro(10, "Collect Anti-Push", function()
   local containers = g_game.getContainers()
