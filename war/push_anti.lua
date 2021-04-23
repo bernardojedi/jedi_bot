@@ -2,7 +2,7 @@ UI.Label("Push")
 
 local itemIds = {3031, 3492}
 local fieldIds = {2123,2121,2126}
-local stackQuantity = 3
+local stackQuantity = 4
 
 local anti_push = macro(100, "Anti Push", "5", function()
   local containers = g_game.getContainers()
@@ -35,7 +35,73 @@ local anti_push = macro(100, "Anti Push", "5", function()
   end
 end)
 
-local auto_anti_push = macro(100, "Anti Push Near Enemy", function()
+local fbomb
+
+local ultra_anti_push_field_id = 2123
+local ultra_anti_push_rune_id = 3192
+
+local autofbomb_anti_push = macro(100, "Auto F-bomb", "/", function()
+  if anti_push.isOff() then
+    anti_push.setOn()
+  end
+  local flagField = false
+  local playerPos = player:getPosition()
+  local playerTopUseThing = g_map.getTile(playerPos):getTopUseThing()
+  for x=-1,1 do
+    for y=-1,1 do
+      local pos = {x=playerPos.x+x, y=playerPos.y+y, z=playerPos.z}
+      local tile = g_map.getTile(pos)
+      if tile and not (x == 0 and y == 0) then
+        for i, item in ipairs(tile:getItems()) do
+          for _, fieldId in ipairs(fieldIds) do
+            if item:getId() == fieldId or (not tile:isWalkable() and not tile:hasCreature()) then
+              flagField = true
+            end
+          end
+        end
+        if flagField then
+          flagField = false
+        else
+          useWith(ultra_anti_push_rune_id, playerTopUseThing)
+          delay(500)
+          return
+        end
+      end
+    end
+  end
+end)
+
+ultra_anti_push = macro(100, "Ultra Anti-Push", function()
+  if anti_push.isOff() then
+    anti_push.setOn()
+  end
+  if autofbomb_anti_push.isOff() then
+    autofbomb_anti_push.setOn()
+  end
+  local playerPos = player:getPosition()
+  local playerTopUseThing = g_map.getTile(playerPos):getTopUseThing()
+  for i, item in ipairs(g_map.getTile(playerPos):getItems()) do
+    if item:getId() == ultra_anti_push_field_id then
+      useWith(3148, playerTopUseThing)
+      delay(500)
+      return
+    end
+  end
+end)
+
+onPlayerPositionChange(function(newPos, oldPos)
+  if ultra_anti_push.isOn() then
+    ultra_anti_push.setOff()
+  end
+  if autofbomb_anti_push.isOn() then
+    autofbomb_anti_push.setOff()
+  end
+  if anti_push.isOn() then
+    anti_push.setOff()
+  end
+end)
+
+local auto_anti_push_enemy = macro(100, "Anti Push Near Enemy", function()
   local playerPos = player:getPosition()
   local flag = false
   for x=-1,1 do
@@ -45,6 +111,29 @@ local auto_anti_push = macro(100, "Anti Push Near Enemy", function()
       if tile then
         for _, creature in ipairs(tile:getCreatures()) do
           if creature:getEmblem() == 2 then
+            flag = true
+          end
+        end
+      end
+    end
+  end
+  if flag then
+    anti_push.setOn()
+  else
+    anti_push.setOff()
+  end
+end)
+
+local auto_anti_push_neutral = macro(100, "Anti Push Near Neutral", function()
+  local playerPos = player:getPosition()
+  local flag = false
+  for x=-1,1 do
+    for y=-1,1 do
+      local pos = {x=playerPos.x+x, y=playerPos.y+y, z=playerPos.z}
+      local tile = g_map.getTile(pos)
+      if tile then
+        for _, creature in ipairs(tile:getCreatures()) do
+          if creature:getEmblem() ~= 1 then
             flag = true
           end
         end

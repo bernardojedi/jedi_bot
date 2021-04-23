@@ -145,3 +145,9 @@ onMissle(function(missle)
       end
     end
 end)
+
+onKeyPress(function(keys)
+    if keys == "Escape" then
+        comboTargetName = 0
+    end
+end)

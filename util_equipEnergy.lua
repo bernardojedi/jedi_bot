@@ -6,7 +6,7 @@
 local energy_ring = 3051; -- Your energy ring
 local energy_ring_equiped = 3088; -- Ring changes id when equiped
 local original_ring = getFinger(); -- Your original ring
-local healthp_for_energy = 50;
+local healthp_for_energy = 60;
 local healthp_for_original = 90;
 local manap_for_original = 10;
 

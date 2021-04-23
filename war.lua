@@ -1,6 +1,3 @@
--- Cavebot by otclient@otclient.ovh
--- visit http://bot.otclient.ovh/
-
 local warTab = "War"
 
 
@@ -13,7 +10,7 @@ War = {} -- global namespace
 --dofile("/war/kill steal.lua")
 
 dofile("/war/push_anti.lua")
---dofile("/war/mwalls.lua")
+dofile("/war/mwalls.lua")
 importStyle("/war/pushmax.otui")
 dofile("/war/pushmax.lua")
 dofile("/war/push_auto.lua")

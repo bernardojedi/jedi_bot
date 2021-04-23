@@ -1,4 +1,5 @@
 local fieldIds = {2123, 2124, 2125, 2121, 2126}
+local aditionalDelay = 20
 
 pushPanelName = "pushmax"
 
@@ -95,7 +96,7 @@ macro(10, function()
   if not storage[pushPanelName].enabled then return end
   local atkCreature = g_game.getAttackingCreature()
   local flwCreature = g_game.getFollowingCreature()
-  if targetTile and targetTile:getTimer() <= 0 and targetTile:getText() == "TARGET IN: " then
+  if targetTile and targetTile:getTimer() <= 0 and targetTile:getText():find("^TARGET ") ~= nil then
     targetTile:setText("")
     targetTile = nil
   end
@@ -105,39 +106,61 @@ macro(10, function()
   if flwCreature then
     target = flwCreature
   end
-  if target and targetTile then
+  if target ~= nil and targetTile then
+    local tile = g_map.getTile(target:getPosition())
+    targetOldPos = tile:getPosition()
     local field = false
     for i, fieldId in ipairs(fieldIds) do
       if targetTile:getTopUseThing():getId() == fieldId then
         field = true
       end
     end
+    local flagAntiPush = tile:getTopUseThing():isPickupable() or not tile:getTopUseThing():isNotMoveable()
+    local flagMW = false
+    if target and targetTile:getText() == "TARGET MWALL IN: " then
+      flagMW = true
+    end
     if not matchPosition(target:getPosition().x, target:getPosition().y, targetTile:getPosition().x,  targetTile:getPosition().y) then
-      local tile = g_map.getTile(target:getPosition())
-      targetOldPos = tile:getPosition()
       if tile then
+        local flagAntiPush = tile:getTopUseThing():isPickupable() or not tile:getTopUseThing():isNotMoveable()
         if targetTile:getTopThing():getId() == 2129 or targetTile:getTopThing():getId() == 2130 or targetTile:getTopThing():getId() == tonumber(storage[pushPanelName].mwallBlockId) then
           if targetTile:getTimer() <= tonumber(storage[pushPanelName].pushDelay) then
-            useWith(tonumber(storage[pushPanelName].pushMaxRuneId), target) -- 3197 desintigrate rune / 3188 firebomb rune
-            delay(10)
+            if flagAntiPush then
+              useWith(tonumber(storage[pushPanelName].pushMaxRuneId), target) -- 3197 desintigrate rune / 3188 firebomb rune
+            end
             g_game.move(target, targetTile:getPosition())
-            tile:setText("")
-            targetTile:setText("")
-            target = nil
-            targetTile = nil
+            -- if flagMW then
+            --   g_game.move(target, targetTile:getPosition())
+            --   delay(tonumber(storage[pushPanelName].pushDelay))
+            --   useWith(3180, tile:getTopUseThing())
+            -- end
+            -- tile:setText("")
+            -- targetTile:setText("")
+            -- target = nil
+            -- targetTile = nil
           end
         elseif field then  -- Destroy field if present
-          g_game.move(target, targetTile:getPosition())
-          delay(20)
-          useWith(3148, targetTile:getTopUseThing())   
-        else
-          if tile:getTopUseThing():isPickupable() or not tile:getTopUseThing():isNotMoveable() then
-            useWith(tonumber(storage[pushPanelName].pushMaxRuneId), target)
-            delay(10)
-            delay(storage[pushPanelName].pushDelay)
-          end
+          useWith(3148, targetTile:getTopUseThing())
+          delay(tonumber(storage[pushPanelName].pushDelay)+aditionalDelay)
           g_game.move(target, targetTile:getPosition())
           delay(storage[pushPanelName].pushDelay)
+        elseif flagMW then
+          g_game.move(target, targetTile:getPosition())
+          delay(tonumber(storage[pushPanelName].pushDelay)+aditionalDelay)
+          useWith(3180, tile:getTopUseThing())
+        else
+          if flagAntiPush then
+            useWith(tonumber(storage[pushPanelName].pushMaxRuneId), target)
+            delay(aditionalDelay)
+          end
+          g_game.move(target, targetTile:getPosition())
+          delay(tonumber(storage[pushPanelName].pushDelay))
+        end
+      end
+      if flagMW and target then
+        if tile and #tile:getCreatures() == 0 and tile:isWalkable() and not (tile:getTopThing():getId() == 2129 or tile:getTopThing():getId() == 2130) then
+          delay(500)
+          useWith(3180, tile:getTopUseThing())
         end
       end
     else
@@ -155,6 +178,7 @@ macro(10, function()
 end)
 
 local resetTimer = now
+local doubleClickTimer = now
 onKeyDown(function(keys)
   if not target or not storage[pushPanelName].enabled then return end
   if keys == storage[pushPanelName].pushMaxKey and resetTimer == 0 then
@@ -167,21 +191,27 @@ onKeyDown(function(keys)
           targetTile:setText("")
         end
       end
-       targetTile = tile
-       if not (targetTile:getTopThing():getId() == 2129 or targetTile:getTopThing():getId() == 2130 or targetTile:getTopThing():getId() == tonumber(storage[pushPanelName].mwallBlockId)) then
-        tile:setTimer(math.max(1000,tonumber(storage[pushPanelName].pushDelay)))
-       end
-       tile:setText("TARGET IN: ")
+      targetTile = tile
+      if not (targetTile:getTopThing():getId() == 2129 or targetTile:getTopThing():getId() == 2130 or targetTile:getTopThing():getId() == tonumber(storage[pushPanelName].mwallBlockId)) then
+        tile:setTimer(math.max(100,tonumber(storage[pushPanelName].pushDelay)))
+      end
+      if (now - doubleClickTimer) <= 1000 then
+        tile:setText("TARGET MWALL IN: ")
+      else
+        tile:setText("TARGET IN: ")
+        doubleClickTimer = now
+      end
      end
    end
    resetTimer = now
 end)
+
 onKeyPress(function(keys)
   if not target or not storage[pushPanelName].enabled then return end
   if keys == storage[pushPanelName].pushMaxKey and (resetTimer - now) < -10 then
     for _, tile in ipairs(g_map.getTiles(posz())) do
       if getDistanceBetween(pos(), tile:getPosition()) < 3 then
-        if tile:getText() == "TARGET IN: " then
+        if tile:getText():find("^TARGET ") ~= nil then
           tile:setText("")
         end
       end
@@ -193,14 +223,17 @@ onKeyPress(function(keys)
     resetTimer = 0
   end
 end)
+
 onCreaturePositionChange(function(creature, newPos, oldPos)
   if target and storage[pushPanelName].enabled then
     if creature:getName() == target:getName() then
       targetTile = nil
       for _, tile in ipairs(g_map.getTiles(posz())) do
         if getDistanceBetween(pos(), tile:getPosition()) < 3 then
-          if tile:getText() ~= "" then
+          if tile:getText():find("^TARGET ") ~= nil then
             tile:setText("")
+            target = nil
+            targetTile = nil
           end
         end
       end

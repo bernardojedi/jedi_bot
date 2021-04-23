@@ -2,7 +2,7 @@ UI.Label("Magic Wall")
 
 -- config
 local marked_tiles = {} -- Don't change anything here
-local key = "Pause"
+local key = "PageUp"
 local magicWallId = 2129
 
 -- script
@@ -30,6 +30,14 @@ local holdMWMacro = macro(10, "Hold Mwall", function()
         table.remove(marked_tiles, tablefind(marked_tiles, tile))
       end
     end
+  end
+end)
+
+onRemoveThing(function(tile, thing)
+  if holdMWMacro.isOff() then return end
+  if thing:getId() ~= 2128 or thing:getId() ~= 2129 or thing:getId() ~= 2130 then return end
+  if tile and tile:getText() == "MWALL" and oldPos and oldPos.z == posz() then
+      useWith(3180, tile:getTopUseThing())
   end
 end)
 
