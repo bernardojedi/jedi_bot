@@ -4,7 +4,7 @@ local itemIds = {3031, 3492}
 local fieldIds = {2123,2121,2126}
 local stackQuantity = 4
 
-local anti_push = macro(100, "Anti Push", "5", function()
+local anti_push = macro(100, "Anti Push", "Shift+F12", function()
   local containers = g_game.getContainers()
   local playerPos = player:getPosition()
   local tile = g_map.getTile(playerPos)
@@ -40,7 +40,7 @@ local fbomb
 local ultra_anti_push_field_id = 2123
 local ultra_anti_push_rune_id = 3192
 
-local autofbomb_anti_push = macro(100, "Auto F-bomb", "/", function()
+local autofbomb_anti_push = macro(100, "Auto F-bomb", "Shift+F11", function()
   if anti_push.isOff() then
     anti_push.setOn()
   end
@@ -81,7 +81,7 @@ ultra_anti_push = macro(100, "Ultra Anti-Push", function()
   local playerPos = player:getPosition()
   local playerTopUseThing = g_map.getTile(playerPos):getTopUseThing()
   for i, item in ipairs(g_map.getTile(playerPos):getItems()) do
-    if item:getId() == ultra_anti_push_field_id then
+    if item:getId() == ultra_anti_push_field_id and not playerTopUseThing:isPickupable() then
       useWith(3148, playerTopUseThing)
       delay(500)
       return

@@ -148,6 +148,6 @@ end)
 
 onKeyPress(function(keys)
     if keys == "Escape" then
-        comboTargetName = 0
+        comboTargetName = ''
     end
 end)
