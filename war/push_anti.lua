@@ -25,7 +25,7 @@ local anti_push = macro(100, "Anti Push", "Shift+F12", function()
             for m, itemId in ipairs(itemIds) do
               if item:getId() ~= topItem:getId() and item:getId() == itemId then
                 g_game.move(item, playerPos, 2)
-                delay(200)
+                delay(100)
               end
             end
           end
@@ -34,8 +34,6 @@ local anti_push = macro(100, "Anti Push", "Shift+F12", function()
     end
   end
 end)
-
-local fbomb
 
 local ultra_anti_push_field_id = 2123
 local ultra_anti_push_rune_id = 3192
@@ -133,7 +131,7 @@ local auto_anti_push_neutral = macro(100, "Anti Push Near Neutral", function()
       local tile = g_map.getTile(pos)
       if tile then
         for _, creature in ipairs(tile:getCreatures()) do
-          if creature:getEmblem() ~= 1 then
+          if creature:isPlayer() and creature:getEmblem() ~= 1 then
             flag = true
           end
         end

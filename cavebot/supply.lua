@@ -8,7 +8,8 @@ CaveBot.Extensions.Supply.setup = function()
   --local widget = UI.createWidget('SupplyItem', ui.list)
   --widget.item.onItemChange = function(newItem)
   --widget.fields.min.onTextChange = function(newText)
-  -- make it similar to UI.Container, so if there are no free slots, add another one, keep min 4 slots, check if value min/max is number after edit
+  --widget.fields.max.onTextChange = function(newText)
+  --make it similar to UI.Container, so if there are no free slots, add another one, keep min 4 slots, check if value min/max is number after edit
 end
 
 -- called when cavebot config changes, configData is a table but it can be nil

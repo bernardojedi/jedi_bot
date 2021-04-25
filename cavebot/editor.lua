@@ -14,7 +14,7 @@ CaveBot.Editor.registerAction = function(action, text, params)
   if type(params) ~= 'function' then
     local raction = CaveBot.Actions[action]
     if not raction then
-      return error("CaveBot editor error: action " .. action .. " doesn't exist")
+      return warn("CaveBot editor warn: action " .. action .. " doesn't exist")
     end
     CaveBot.Editor.Actions[action] = params
     color = raction.color
@@ -123,6 +123,18 @@ CaveBot.Editor.setup = function()
     value="text",
     title="Say",
     description="Enter text to say",
+    multiline=false   
+  }) 
+  registerAction("follow", {
+    value="NPC name",
+    title="Follow Creature",
+    description="insert creature name to follow",
+    multiline=false   
+  })
+  registerAction("npcsay", {
+    value="text",
+    title="NPC Say",
+    description="Enter text to NPC say",
     multiline=false   
   }) 
   registerAction("function", {
