@@ -38,15 +38,14 @@ if not storage[ComboPanelName] then
     castLeader = "",
     sayPhrase = "",
     spell = "",
-    botNumber = math.random(100000000000, 999999999999),
     serverLeader = "",
     item = 3155,
     attack = "",
     follow = "",
     commandsEnabled = true,
-    infoEnabled = true,
     serverEnabled = false,
-    serverLeaderTarget = false
+    serverLeaderTarget = false,
+    serverTriggers = true
   }
 end
 
@@ -82,16 +81,16 @@ if rootWidget then
     widget:setOn(storage[ComboPanelName].commandsEnabled)
   end
 
-  comboWindow.server.infoShare:setOn(storage[ComboPanelName].infoEnabled)
-  comboWindow.server.infoShare.onClick = function(widget)
-    storage[ComboPanelName].infoEnabled = not storage[ComboPanelName].infoEnabled
-    widget:setOn(storage[ComboPanelName].infoEnabled)
-  end
-
   comboWindow.server.botServerToggle:setOn(storage[ComboPanelName].serverEnabled)
   comboWindow.server.botServerToggle.onClick = function(widget)
     storage[ComboPanelName].serverEnabled = not storage[ComboPanelName].serverEnabled
     widget:setOn(storage[ComboPanelName].serverEnabled)
+  end
+
+  comboWindow.server.Triggers:setOn(storage[ComboPanelName].serverTriggers)
+  comboWindow.server.Triggers.onClick = function(widget)
+    storage[ComboPanelName].serverTriggers = not storage[ComboPanelName].serverTriggers
+    widget:setOn(storage[ComboPanelName].serverTriggers)
   end
 
   comboWindow.server.targetServerLeaderToggle:setOn(storage[ComboPanelName].serverLeaderTarget)
@@ -103,12 +102,6 @@ if rootWidget then
   -- buttons
   comboWindow.closeButton.onClick = function(widget)
     comboWindow:hide()
-  end
-
-
-  comboWindow.server.randomizeButton.onClick = function(widget)
-    storage[ComboPanelName].botNumber = math.random(100000000000, 999999999999)
-    comboWindow.server.channelNumber:setText(storage[ComboPanelName].botNumber)
   end
 
   -- combo boxes
@@ -196,61 +189,9 @@ if rootWidget then
   comboWindow.server.botServerLeader.onTextChange = function(widget, text)
     storage[ComboPanelName].serverLeader = text
   end  
-
-  comboWindow.server.channelNumber:setText(storage[ComboPanelName].botNumber)
-  comboWindow.server.channelNumber.onTextChange = function(widget, text)
-    storage[ComboPanelName].botNumber = text
-  end
 end
 
 -- bot server
--- MW/Mana info
-
-storage[ComboPanelName].mwalls = {}
-
-local channel = tostring(storage[ComboPanelName].botNumber)
-BotServer.init(name(), channel)
-
-BotServer.listen("mwall", function(name, message)
-  if storage[ComboPanelName].serverEnabled and storage[ComboPanelName].infoEnabled then
-    if not storage[ComboPanelName].mwalls[message["pos"]] or storage[ComboPanelName].mwalls[message["pos"]] < now then
-      storage[ComboPanelName].mwalls[message["pos"]] = now + message["duration"] - 150 -- 150 is latency correction
-    end
-  end
-end)
-
-BotServer.listen("mana", function(name, message)
-  if storage[ComboPanelName].serverEnabled and storage[ComboPanelName].infoEnabled then
-    local creature = getPlayerByName(name)
-    if creature then
-      creature:setManaPercent(message["mana"])
-    end
-  end
-end)
-
-onAddThing(function(tile, thing)
-  if storage[ComboPanelName].serverEnabled and storage[ComboPanelName].infoEnabled and storage[ComboPanelName].enabled then
-    if thing:isItem() and thing:getId() == 2129 then
-      local pos = tile:getPosition().x .. "," .. tile:getPosition().y .. "," .. tile:getPosition().z
-      if not storage[ComboPanelName].mwalls[pos] or storage[ComboPanelName].mwalls[pos] < now then
-        storage[ComboPanelName].mwalls[pos] = now + 20000
-        BotServer.send("mwall", {pos=pos, duration=20000})
-      end
-      tile:setTimer(storage[ComboPanelName].mwalls[pos] - now)
-    end
-  end
-end)
-
-local lastMana = 0
-macro(100, function()
-  if storage[ComboPanelName].serverEnabled and storage[ComboPanelName].infoEnabled and storage[ComboPanelName].enabled then
-    if manapercent() ~= lastMana then
-      lastMana = manapercent()
-      BotServer.send("mana", {mana=lastMana})
-    end
-  end
-end)
-
 -- [[ join party made by Frosty ]] --
 
 local shouldCloseWindow = false
@@ -272,8 +213,8 @@ end)
 
 comboWindow.server.partyButton.onClick = function(widget)
   if storage[ComboPanelName].serverEnabled and storage[ComboPanelName].enabled then 
-    if storage[ComboPanelName].serverLeader:len() > 0 and storage[ComboPanelName].botNumber:len() > 0 then 
-      talkPrivate(storage[ComboPanelName].serverLeader, "request invite " .. storage[ComboPanelName].botNumber)
+    if storage[ComboPanelName].serverLeader:len() > 0 and storage.BotServerChannel:len() > 0 then 
+      talkPrivate(storage[ComboPanelName].serverLeader, "request invite " .. storage.BotServerChannel)
     else
       error("Request failed. Lack of data.")
     end
@@ -305,7 +246,7 @@ onTalk(function(name, level, mode, text, channelId, pos)
     if mode == 4 then
       if string.find(text, "request invite") then
         local access = string.match(text, "%d.*")
-        if access and access == storage[ComboPanelName].botNumber then
+        if access and access == storage.BotServerChannel then
           local minion = getCreatureByName(name)
           if minion then
             g_game.partyInvite(minion:getId())
@@ -436,7 +377,7 @@ macro(100, function()
   if player:isWalking() then return end
   local p = toFollowPos[posz()]
   if not p then return end
-  if autoWalk(p, 20, {ignoreNonPathable=true, precision=1, ignoreStairs=false}) then
+  if CaveBot.walkTo(p, 20, {ignoreNonPathable=true, precision=1, ignoreStairs=false}) then
     delay(100)
   end
 end)
@@ -476,7 +417,7 @@ end)
 
 if BotServer._websocket and storage[ComboPanelName].enabled and storage[ComboPanelName].serverEnabled then
   BotServer.listen("trigger", function(name, message)
-    if message == "start" and name:lower() ~= player:getName():lower() and name:lower() == storage[ComboPanelName].serverLeader:lower() then
+    if message == "start" and name:lower() ~= player:getName():lower() and name:lower() == storage[ComboPanelName].serverLeader:lower() and storage[ComboPanelName].serverTriggers then
       startCombo = true
     end
   end)
@@ -492,10 +433,8 @@ if BotServer._websocket and storage[ComboPanelName].enabled and storage[ComboPan
   end)
   BotServer.listen("useWith", function(name, message)
    local tile = g_map.getTile(message)
-   if name:lower() ~= player:getName():lower() and name:lower() == storage[ComboPanelName].serverLeader:lower() and storage[ComboPanelName].attackItemEnabled and storage[ComboPanelName].item and findItem(storage[ComboPanelName].item) then
+   if storage[ComboPanelName].serverTriggers and name:lower() ~= player:getName():lower() and name:lower() == storage[ComboPanelName].serverLeader:lower() and storage[ComboPanelName].attackItemEnabled and storage[ComboPanelName].item and findItem(storage[ComboPanelName].item) then
     useWith(storage[ComboPanelName].item, tile:getTopUseThing())
    end
   end)
 end
-
-addSeparator()

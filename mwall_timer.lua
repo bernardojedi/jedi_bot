@@ -18,7 +18,7 @@ onAddThing(function(tile, thing)
   if thing:getId() == magicWallId1 then
     timer = magicWallTime
   elseif thing:getId() == magicWallId2 then
-      timer = magicWallTime
+    timer = magicWallTime
   elseif thing:getId() == wildGrowthId then
     timer = wildGrowthTime
   else

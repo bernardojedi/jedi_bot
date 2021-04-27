@@ -1,3 +1,3 @@
-macro(120000, "Renew Soft",  function()
-    say("!soft")
-end)
+-- macro(120000, "Renew Soft",  function()
+--     say("!soft")
+-- end)

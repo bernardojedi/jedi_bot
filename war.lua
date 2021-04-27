@@ -8,7 +8,10 @@ War = {} -- global namespace
 --dofile("/war/combo.lua")
 --dofile("/war/magebomb.lua")
 --dofile("/war/kill steal.lua")
-
+importStyle("/war/botserver.otui")
+dofile("/war/botserver.lua")
+--importStyle("/war/combo.otui")
+--dofile("/war/combo.lua")
 dofile("/war/push_anti.lua")
 dofile("/war/mwalls.lua")
 importStyle("/war/pushmax.otui")

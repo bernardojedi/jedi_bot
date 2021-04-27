@@ -129,9 +129,9 @@ macro(10, function()
               useWith(tonumber(storage[pushPanelName].pushMaxRuneId), target) -- 3197 desintigrate rune / 3188 firebomb rune
             end
             g_game.move(target, targetTile:getPosition())
+            delay(tonumber(storage[pushPanelName].pushDelay))
             -- if flagMW then
-            --   g_game.move(target, targetTile:getPosition())
-            --   delay(tonumber(storage[pushPanelName].pushDelay))
+            --   delay(500)
             --   useWith(3180, tile:getTopUseThing())
             -- end
             -- tile:setText("")

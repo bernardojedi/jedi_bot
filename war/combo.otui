@@ -254,40 +254,9 @@ BotServer < Panel
   size: 220 100 
 
   Label
-    id: label
-    anchors.left: parent.left
-    anchors.top: parent.top
-    text: Channel:
-    margin-top: 5
-    margin-left: 3
-    height: 15
-    color: #ffaa00    
-
-  TextEdit
-    id: channelNumber
-    anchors.left: prev.right
-    anchors.top: prev.top
-    margin-left: 5
-    width: 100
-    height: 15
-    font: cipsoftFont 
-    text-align: center   
-
-  Button
-    id: randomizeButton
-    anchors.left: prev.right
-    anchors.top: prev.top
-    anchors.bottom: prev.bottom
-    anchors.right: parent.right
-    text: Random
-    font: cipsoftFont
-    margin-left: 5
-    margin-right: 3
-
-  Label
     id: labelX
     anchors.left: parent.left
-    anchors.top: prev.bottom
+    anchors.top: parent.top
     text: Leader:
     height: 15
     color: #ffaa00 
@@ -307,42 +276,43 @@ BotServer < Panel
   Button
     id: partyButton
     anchors.left: labelX.left
-    anchors.bottom: parent.bottom
     anchors.top: botServerLeader.bottom
     margin-top: 5
-    margin-bottom: 26
-    font:cipsoftFont
+    height: 30
     text: Join Party
     text-wrap: true
     multiline: true
 
   BotSwitch
-    id: infoShare
+    id: botServerToggle
     anchors.left: prev.right
     anchors.top: botServerLeader.bottom
-    anchors.right: botServerLeader.right
-    anchors.bottom: partyButton.bottom
-    margin-top: 5
+    anchors.right: parent.right
+    height: 30
     margin-left: 3
-    text: MW/Mana info 
-
-  BotSwitch
-    id: botServerToggle
-    anchors.left: prev.left
-    anchors.top: prev.bottom
-    anchors.right: prev.right
-    anchors.bottom: parent.bottom
-    margin-top: 3
+    margin-right: 3
+    margin-top: 5
     text: Server Enabled
 
   BotSwitch
     id: targetServerLeaderToggle
     anchors.left: partyButton.left
-    anchors.top: infoShare.bottom
+    anchors.top: partyButton.bottom
     anchors.right: partyButton.right
-    anchors.bottom: parent.bottom
     margin-top: 3
+    height: 30
     text: Leader Targets
+
+  BotSwitch
+    id: Triggers
+    anchors.left: prev.right
+    anchors.top: partyButton.bottom
+    anchors.right: parent.right
+    margin-top: 3
+    height: 30
+    margin-left: 3
+    margin-right: 3
+    text: Triggers  
 
 ComboWindow < MainWindow
   !text: tr('Combo Options')

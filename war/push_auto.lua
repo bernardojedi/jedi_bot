@@ -38,28 +38,39 @@ local auto_push = macro(100, "Auto Push - Distance", function()
         elseif pressedKey == '1' or pressedKey == '2' or pressedKey == '3' then
           pos.y = pos.y + 1
         end
+        local path = nil
         local walkPos = {x=playerPos.x, y=playerPos.y, z=playerPos.z}
         if getDistanceBetween(playerPos, targetPos) == 1 then
           if playerPos.y < targetPos.y then
             walkPos.y = walkPos.y - 1
-            path = findPath(playerPos, walkPos, 1, {})
+            path = findPath(playerPos, walkPos, 1, { ignoreNonPathable = true })
           elseif playerPos.y > targetPos.y then
             walkPos.y = walkPos.y + 1
-            path = findPath(playerPos, walkPos, 1, {})
+            path = findPath(playerPos, walkPos, 1, { ignoreNonPathable = true })
           end
           if path == nil then
             walkPos = {x=playerPos.x, y=playerPos.y, z=playerPos.z}
             if playerPos.x < targetPos.x then
               walkPos.x = walkPos.x - 1
-              path = findPath(playerPos, walkPos, 1, {})
+              path = findPath(playerPos, walkPos, 1, { ignoreNonPathable = true })
             elseif playerPos.x > targetPos.x then
               walkPos.x = walkPos.x + 1
-              path = findPath(playerPos, walkPos, 1, {})
+              path = findPath(playerPos, walkPos, 1, { ignoreNonPathable = true })
             end
           end
-          if path then
-            walk(path[1])
+        end
+        -- Desintegrate if anti-push
+        local targetTile = g_map.getTile(targetPos)
+        if targetTile then
+          local targetTopThing = targetTile:getTopUseThing()
+          if targetTopThing:isPickupable() then
+            useWith(3197, targetTopThing)
+            delay(100)
           end
+        end
+
+        if path then
+          walk(path[1])
         end
 
         -- Destroy field if present
@@ -69,13 +80,13 @@ local auto_push = macro(100, "Auto Push - Distance", function()
           for i, fieldId in ipairs(fieldIds) do
             if topThing:getId() == fieldId then
               useWith(3148, topThing)
-              delay(200)
+              delay(100)
             end
           end
         end
 
         g_game.move(target, pos, 1)
-        delay(500)
+        delay(300)
       end
     end
   end
